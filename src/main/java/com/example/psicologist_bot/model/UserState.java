@@ -6,5 +6,10 @@ public enum UserState {
 
     START,
 
-    ASK_QUESTION
+    ASK_QUESTION,
+    FIRST_QUESTION,
+    SECOND_QUESTION,
+    THIRD_QUESTION,
+
+
 }

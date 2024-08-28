@@ -1,5 +1,6 @@
 package com.example.psicologist_bot.bot;
 
+import com.example.psicologist_bot.model.Answers;
 import com.example.psicologist_bot.model.UserState;
 import com.example.psicologist_bot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Map;
+
 @Component
 @RequiredArgsConstructor
 public class PsicologistBot extends TelegramLongPollingBot {
@@ -16,6 +19,10 @@ public class PsicologistBot extends TelegramLongPollingBot {
     private final UserService userService;
 
     private final HandleService handleService;
+
+    private  Map<Long, Answers> answersMap;
+
+    private Answers answers;
 
     @Value("${bot.token}")
     private String token;
@@ -48,12 +55,35 @@ public class PsicologistBot extends TelegramLongPollingBot {
                         currentState = userService.updateUserState(chatId, UserState.START);
                     }
                 }
-                switch (currentState){
+                switch (currentState) {
                     case DEFAULT -> handleService.defaultMessageHandler(chatId, text, this);
                     case START -> handleService.startMessageHandler(chatId, this);
                     case ASK_QUESTION ->
-                            handleService.menuMessageHandler(chatId, userService.getLanguage(chatId).get().name(), this);
-                   }
+                            handleService.askQuestionHandler(chatId,
+                                    userService.getLanguage(chatId).get().name(), this);
+                    case FIRST_QUESTION ->{
+                        answers.setAnswer1(text);
+                        answersMap.put(chatId,answers);
+                        handleService.saveFirstQuestionAnswer(chatId,this);
+                    }
+                }
+            }
+        }
+        if (update.hasCallbackQuery()) {
+            Long chatId = update.getCallbackQuery().getMessage().getChatId();
+            String data = update.getCallbackQuery().getData();
+            UserState currentState = userService.getUserState(chatId);
+
+            switch (currentState) {
+                case START -> {
+                    handleService.askQuestionHandler(chatId, data, this);
+                }
+                case ASK_QUESTION -> {
+                    switch (data) {
+                        case "questions" -> handleService.firstQuestionMessageHandler(chatId, this);
+                        case "back" -> handleService.backOperationMessageHandler(chatId, this);
+                    }
+                }
             }
         }
     }
