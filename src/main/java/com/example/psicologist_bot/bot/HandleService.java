@@ -91,6 +91,22 @@ public class HandleService {
         }
     }
 
+
+    @SneakyThrows
+    public void nextOperationMessageHandler(Long chatId, TelegramLongPollingBot bot) {
+        UserState userState = userService.getUserState(chatId);
+        if (userState.equals(UserState.FIRST_QUESTION)) {
+            userService.updateUserState(chatId, UserState.SECOND_QUESTION);
+            secondQuestionMessageHendler(chatId, bot);
+        }
+        if (userState.equals(UserState.SECOND_QUESTION)) {
+            userService.updateUserState(chatId, UserState.THIRD_QUESTION);
+            thirdQuestionMessageHendler(chatId, bot);
+        }
+    }
+
+
+
     @SneakyThrows
     public void firstQuestionMessageHandler(Long chatId, TelegramLongPollingBot bot) {
         SendMessage sendMessage = new SendMessage();
@@ -99,21 +115,34 @@ public class HandleService {
             sendMessage.setText("1-savol: Sizda qanday semptomlar bor?");
         else if (userService.getLanguage(chatId).get().equals(Language.RUS))
             sendMessage.setText("Вопрос 1: Какие у вас симптомы?");
-        sendMessage.setReplyMarkup(markupService.firstQuestionInlineMarkup(chatId));
+        sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
        userService.updateUserState(chatId, UserState.FIRST_QUESTION);
         bot.execute(sendMessage);
     }
 
     @SneakyThrows
-    public void saveFirstQuestionAnswer(Long chatId, TelegramLongPollingBot bot){
+    public void secondQuestionMessageHendler(Long chatId, TelegramLongPollingBot bot){
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
             sendMessage.setText("2-savol: Siz qanchalik tez-tez tashvish yoki stressni boshdan kechirasiz?");
         else if (userService.getLanguage(chatId).get().equals(Language.RUS))
             sendMessage.setText("Вопрос 2: Как часто вы испытываете тревогу или стресс?");
-        sendMessage.setReplyMarkup(markupService.firstQuestionInlineMarkup(chatId));
+        sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
         userService.updateUserState(chatId, UserState.SECOND_QUESTION);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void thirdQuestionMessageHendler(Long chatId, TelegramLongPollingBot bot){
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("3-savol: Alomatlaringizni batafsilroq tasvirlab bera olasizmi?");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Вопрос 3: Можете ли вы описать ваши симптомы более подробно?");
+        sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
+        userService.updateUserState(chatId, UserState.THIRD_QUESTION);
         bot.execute(sendMessage);
     }
 }

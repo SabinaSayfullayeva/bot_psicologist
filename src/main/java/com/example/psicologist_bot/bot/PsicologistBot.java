@@ -61,11 +61,9 @@ public class PsicologistBot extends TelegramLongPollingBot {
                     case ASK_QUESTION ->
                             handleService.askQuestionHandler(chatId,
                                     userService.getLanguage(chatId).get().name(), this);
-                    case FIRST_QUESTION ->{
-                        answers.setAnswer1(text);
-                        answersMap.put(chatId,answers);
-                        handleService.saveFirstQuestionAnswer(chatId,this);
-                    }
+                    case FIRST_QUESTION -> handleService.secondQuestionMessageHendler(chatId,this);
+                    case SECOND_QUESTION -> handleService.thirdQuestionMessageHendler(chatId,this);
+
                 }
             }
         }
@@ -82,6 +80,11 @@ public class PsicologistBot extends TelegramLongPollingBot {
                     switch (data) {
                         case "questions" -> handleService.firstQuestionMessageHandler(chatId, this);
                         case "back" -> handleService.backOperationMessageHandler(chatId, this);
+                    }
+                }
+                case FIRST_QUESTION, SECOND_QUESTION -> {
+                    if (data.equals("next")) {
+                        handleService.nextOperationMessageHandler(chatId, this);
                     }
                 }
             }

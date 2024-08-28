@@ -69,7 +69,7 @@ public class MarkupService {
         return inlineKeyboard;
     }
 
-    public InlineKeyboardMarkup firstQuestionInlineMarkup(Long chatId) throws ExecutionException, InterruptedException {
+    public InlineKeyboardMarkup nextInlineMarkup(Long chatId) throws ExecutionException, InterruptedException {
         InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         List<InlineKeyboardButton> buttonRow = new ArrayList<>();
@@ -83,7 +83,7 @@ public class MarkupService {
         }
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText(buttonText1);
-        button.setCallbackData("to_question2");
+        button.setCallbackData("next");
         buttonRow.add(button);
 
         rowsInline.add(buttonRow);
