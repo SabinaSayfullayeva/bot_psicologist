@@ -10,6 +10,10 @@ public enum UserState {
     FIRST_QUESTION,
     SECOND_QUESTION,
     THIRD_QUESTION,
+    FULL_NAME,
+    PHONE_NUMBER,
+    MAIL,
+    PAYMENT
 
 
 }

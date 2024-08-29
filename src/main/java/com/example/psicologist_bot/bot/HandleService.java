@@ -65,10 +65,11 @@ public class HandleService {
 
 
     @SneakyThrows
-    public void askQuestionHandler(Long chatId, String data, TelegramLongPollingBot bot) {
-        userService.changeLanguage(chatId, data);
+    public void askQuestionHandler(Long chatId,String data, TelegramLongPollingBot bot) {
+
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
+        userService.updateEmail(chatId,data);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
             sendMessage.setText("Iltimos quyidagi savollarga yozma ravishda javob yuboring!\n Savollarga javob berishingiz " +
                     "yoki javob berishni xoxlamasangiz o'tkazib yuborishingiz mumkin");
@@ -77,6 +78,46 @@ public class HandleService {
                     "Вы можете ответить на вопросы или пропустить их, если не хотите на них отвечать.");
         sendMessage.setReplyMarkup(markupService.askQuestionInlineMarkup(chatId));
         userService.updateUserState(chatId, UserState.ASK_QUESTION);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void fullNameMessageHandler(Long chatId,String data, TelegramLongPollingBot bot) {
+        userService.changeLanguage(chatId, data);
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("Ism sharifingiz kiriting (F.I.O): ");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Введите свое полное имя (Ф.И.O): ");
+        userService.updateUserState(chatId, UserState.FULL_NAME);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void appFullNameMessageHandler(Long chatId, String fullName, TelegramLongPollingBot bot) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("Telefon raqam kiriting: ");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Введите номер телефона: ");
+       userService.updateFullname(chatId,fullName);
+        userService.updateUserState(chatId, UserState.PHONE_NUMBER);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void appPhoneNumMessageHandler(Long chatId, String phoneNum, TelegramLongPollingBot bot) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("Elektron pochta manzilingizni kirirting(ixtiyoriy): ");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Введите свой адрес электронной почты (необязательно): ");
+       sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
+        userService.updatePhoneNumber(chatId,phoneNum);
+        userService.updateUserState(chatId, UserState.MAIL);
         bot.execute(sendMessage);
     }
 
@@ -97,12 +138,22 @@ public class HandleService {
         UserState userState = userService.getUserState(chatId);
         if (userState.equals(UserState.FIRST_QUESTION)) {
             userService.updateUserState(chatId, UserState.SECOND_QUESTION);
-            secondQuestionMessageHendler(chatId, bot);
+            secondQuestionMessageHendler(chatId,null, bot);
         }
         if (userState.equals(UserState.SECOND_QUESTION)) {
             userService.updateUserState(chatId, UserState.THIRD_QUESTION);
-            thirdQuestionMessageHendler(chatId, bot);
+            thirdQuestionMessageHendler(chatId,null, bot);
         }
+        if (userState.equals(UserState.MAIL)) {
+            userService.updateUserState(chatId, UserState.ASK_QUESTION);
+            askQuestionHandler(chatId,null, bot);
+        }
+        if (userState.equals(UserState.THIRD_QUESTION)) {
+            userService.updateUserState(chatId, UserState.PAYMENT);
+            scheduleMeeting(chatId,null, bot);
+        }
+
+
     }
 
 
@@ -121,7 +172,8 @@ public class HandleService {
     }
 
     @SneakyThrows
-    public void secondQuestionMessageHendler(Long chatId, TelegramLongPollingBot bot){
+    public void secondQuestionMessageHendler(Long chatId,String data, TelegramLongPollingBot bot){
+        answersService.updateAnswer1(chatId,data);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
@@ -134,7 +186,8 @@ public class HandleService {
     }
 
     @SneakyThrows
-    public void thirdQuestionMessageHendler(Long chatId, TelegramLongPollingBot bot){
+    public void thirdQuestionMessageHendler(Long chatId,String data, TelegramLongPollingBot bot){
+        answersService.updateAnswer2(chatId,data);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
@@ -145,4 +198,22 @@ public class HandleService {
         userService.updateUserState(chatId, UserState.THIRD_QUESTION);
         bot.execute(sendMessage);
     }
+
+    @SneakyThrows
+    public void scheduleMeeting(Long chatId,String data, TelegramLongPollingBot bot){
+        answersService.updateAnswer3(chatId,data);
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("Siz uchrashuvni rejalashtirish uchun to'lovni amalga oshirishingiz kerak\n" +
+                    "quyidagi to'lov tizimlari orqali to'lovni amalga oshirishingiz mumkin");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Вы должны заплатить, чтобы назначить встречу\n" +
+                    "Вы можете произвести оплату через следующие платежные системы");
+        sendMessage.setReplyMarkup(markupService.paymentInlineMerkup(chatId));
+        userService.updateUserState(chatId, UserState.PAYMENT);
+        bot.execute(sendMessage);
+    }
+
+
 }

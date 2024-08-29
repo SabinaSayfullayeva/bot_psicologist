@@ -19,6 +19,12 @@ public class User {
 
     Long chatId;
 
+    String fullName;
+
+    String phoneNumber;
+
+    String Email;
+
     @Enumerated(EnumType.STRING)
     Language language;
 

@@ -91,4 +91,44 @@ public class MarkupService {
         inlineKeyboard.setKeyboard(rowsInline);
         return inlineKeyboard;
     }
+
+    public InlineKeyboardMarkup paymentInlineMerkup(Long chatId) throws ExecutionException, InterruptedException {
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        List<InlineKeyboardButton> buttonRow = new ArrayList<>();
+
+        String buttonText1 = "";
+        String buttonText2 = "";
+        String buttonText3 = "";
+
+        if (userService.getLanguage(chatId).get().equals(Language.UZB)) {
+            buttonText1 = "Click 💵";
+            buttonText2 = "Payme 💶";
+            buttonText3 = "Uzum  💷";
+
+        } else if (userService.getLanguage(chatId).get().equals(Language.RUS)) {
+            buttonText1 = "Click 💵";
+            buttonText2 = "Payme 💶";
+            buttonText3 = "Uzum  💷";
+        }
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(buttonText1);
+        button.setCallbackData("click");
+        buttonRow.add(button);
+
+
+        button = new InlineKeyboardButton();
+        button.setText(buttonText2);
+        button.setCallbackData("payme");
+        buttonRow.add(button);
+
+        button = new InlineKeyboardButton();
+        button.setText(buttonText3);
+        button.setCallbackData("uzum");
+        buttonRow.add(button);
+        rowsInline.add(buttonRow);
+
+        inlineKeyboard.setKeyboard(rowsInline);
+        return inlineKeyboard;
+    }
 }

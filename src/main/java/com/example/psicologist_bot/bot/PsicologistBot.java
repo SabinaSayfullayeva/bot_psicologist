@@ -58,11 +58,12 @@ public class PsicologistBot extends TelegramLongPollingBot {
                 switch (currentState) {
                     case DEFAULT -> handleService.defaultMessageHandler(chatId, text, this);
                     case START -> handleService.startMessageHandler(chatId, this);
-                    case ASK_QUESTION ->
-                            handleService.askQuestionHandler(chatId,
-                                    userService.getLanguage(chatId).get().name(), this);
-                    case FIRST_QUESTION -> handleService.secondQuestionMessageHendler(chatId,this);
-                    case SECOND_QUESTION -> handleService.thirdQuestionMessageHendler(chatId,this);
+                    case FULL_NAME -> handleService.appFullNameMessageHandler(chatId,text,this);
+                    case PHONE_NUMBER -> handleService.appPhoneNumMessageHandler(chatId,text,this);
+                    case MAIL ->handleService.askQuestionHandler(chatId, text,this);
+                    case FIRST_QUESTION -> handleService.secondQuestionMessageHendler(chatId,text,this);
+                    case SECOND_QUESTION -> handleService.thirdQuestionMessageHendler(chatId,text,this);
+                    case THIRD_QUESTION -> handleService.scheduleMeeting(chatId,text,this);
 
                 }
             }
@@ -74,15 +75,14 @@ public class PsicologistBot extends TelegramLongPollingBot {
 
             switch (currentState) {
                 case START -> {
-                    handleService.askQuestionHandler(chatId, data, this);
+                    handleService.fullNameMessageHandler(chatId, data,this);
                 }
                 case ASK_QUESTION -> {
-                    switch (data) {
-                        case "questions" -> handleService.firstQuestionMessageHandler(chatId, this);
-                        case "back" -> handleService.backOperationMessageHandler(chatId, this);
+                    if (data.equals("questions")) {
+                        handleService.firstQuestionMessageHandler(chatId, this);
                     }
                 }
-                case FIRST_QUESTION, SECOND_QUESTION -> {
+                case FIRST_QUESTION, SECOND_QUESTION,MAIL,THIRD_QUESTION -> {
                     if (data.equals("next")) {
                         handleService.nextOperationMessageHandler(chatId, this);
                     }

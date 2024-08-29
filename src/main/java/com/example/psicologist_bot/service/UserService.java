@@ -35,6 +35,29 @@ public class UserService {
         throw new RuntimeException("User is already saved with this chatId");
     }
 
+    public void updateFullname(Long chatId,String fullname){
+        Optional<User> optionalUser = userRepository.findByChatId(chatId);
+        User user = optionalUser.get();
+        user.setFullName(fullname);
+        userRepository.save(user);
+    }
+
+
+    public void updatePhoneNumber(Long chatId,String phoneNumber){
+        Optional<User> optionalUser = userRepository.findByChatId(chatId);
+        User user = optionalUser.get();
+        user.setPhoneNumber(phoneNumber);
+        userRepository.save(user);
+    }
+
+
+    public void updateEmail(Long chatId,String mail){
+        Optional<User> optionalUser = userRepository.findByChatId(chatId);
+        User user = optionalUser.get();
+        user.setEmail(mail);
+        userRepository.save(user);
+    }
+
     public boolean existsByChatId(Long chatId) {
         return userRepository.existsByChatId(chatId);
     }
