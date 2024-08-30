@@ -163,9 +163,9 @@ public class HandleService {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
-            sendMessage.setText("1-savol: Sizda qanday semptomlar bor?");
+            sendMessage.setText("1-savol: Sizda simptomlar qachondan paydo bo'lgan?");
         else if (userService.getLanguage(chatId).get().equals(Language.RUS))
-            sendMessage.setText("Вопрос 1: Какие у вас симптомы?");
+            sendMessage.setText("Вопрос 1: Когда у вас появились симптомы?");
         sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
        userService.updateUserState(chatId, UserState.FIRST_QUESTION);
         bot.execute(sendMessage);
@@ -177,9 +177,9 @@ public class HandleService {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
-            sendMessage.setText("2-savol: Siz qanchalik tez-tez tashvish yoki stressni boshdan kechirasiz?");
+            sendMessage.setText("2-savol: Siz qanchalik tez xavotir yoki stress his qilasiz?");
         else if (userService.getLanguage(chatId).get().equals(Language.RUS))
-            sendMessage.setText("Вопрос 2: Как часто вы испытываете тревогу или стресс?");
+            sendMessage.setText("Вопрос 2: Как часто вы чувствуете беспокойство или стресс?");
         sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
         userService.updateUserState(chatId, UserState.SECOND_QUESTION);
         bot.execute(sendMessage);
@@ -191,7 +191,7 @@ public class HandleService {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
-            sendMessage.setText("3-savol: Alomatlaringizni batafsilroq tasvirlab bera olasizmi?");
+            sendMessage.setText("3-savol: O'z simptomlaringizni batafsilroq tasvirlab bera olasizmi?");
         else if (userService.getLanguage(chatId).get().equals(Language.RUS))
             sendMessage.setText("Вопрос 3: Можете ли вы описать ваши симптомы более подробно?");
         sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
