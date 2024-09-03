@@ -14,6 +14,7 @@ public class BotInitializer {
 
     private final PsicologistBot bot;
 
+
     @EventListener({ContextRefreshedEvent.class})
     private void init() {
         try {

@@ -1,4 +1,4 @@
-package com.example.psicologist_bot.model;
+package com.example.psicologist_bot.model.enums;
 
 public enum UserState {
 

@@ -1,5 +1,7 @@
 package com.example.psicologist_bot.model;
 
+import com.example.psicologist_bot.model.enums.Language;
+import com.example.psicologist_bot.model.enums.UserState;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

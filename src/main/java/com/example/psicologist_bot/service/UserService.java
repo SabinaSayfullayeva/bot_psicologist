@@ -1,8 +1,8 @@
 package com.example.psicologist_bot.service;
 
-import com.example.psicologist_bot.model.Language;
+import com.example.psicologist_bot.model.enums.Language;
 import com.example.psicologist_bot.model.User;
-import com.example.psicologist_bot.model.UserState;
+import com.example.psicologist_bot.model.enums.UserState;
 import com.example.psicologist_bot.reposiyory.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

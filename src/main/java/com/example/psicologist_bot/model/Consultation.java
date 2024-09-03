@@ -1,10 +1,11 @@
 package com.example.psicologist_bot.model;
 
+import com.example.psicologist_bot.model.enums.ConsultationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -22,9 +23,14 @@ public class Consultation {
     @ManyToOne
     User user;
 
-    LocalDateTime time;
+    Timestamp time;
+  /*  @OneToOne
+    Payment payment;*/
 
-    PaymentStatus paymentStatus;
+    private Double amountOfPayment;
+
+    private boolean paid;
+
 
     ConsultationStatus consultationStatus;
 }

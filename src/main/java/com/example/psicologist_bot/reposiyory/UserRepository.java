@@ -1,7 +1,7 @@
 package com.example.psicologist_bot.reposiyory;
 
 import com.example.psicologist_bot.model.User;
-import com.example.psicologist_bot.model.UserState;
+import com.example.psicologist_bot.model.enums.UserState;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -31,4 +31,11 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Modifying
     @Query(value = "update users set language=:language where chat_id=:chatId", nativeQuery = true)
     void updateLanguage(@Param("chatId") Long chatId, @Param("language") String language);
+
+
+    Optional<User> findByPhoneNumber(String username);
+
+    boolean existsByPhoneNumber(String username);
+
+
 }

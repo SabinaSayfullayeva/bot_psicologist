@@ -1,7 +1,7 @@
 package com.example.psicologist_bot.bot;
 
 import com.example.psicologist_bot.model.Answers;
-import com.example.psicologist_bot.model.UserState;
+import com.example.psicologist_bot.model.enums.UserState;
 import com.example.psicologist_bot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -20,6 +20,9 @@ public class PsicologistBot extends TelegramLongPollingBot {
 
     private final HandleService handleService;
 
+    private final AdminBotController adminBotController;
+
+
     private  Map<Long, Answers> answersMap;
 
     private Answers answers;
@@ -29,6 +32,11 @@ public class PsicologistBot extends TelegramLongPollingBot {
 
     @Value("${bot.username}")
     private String username;
+
+
+    @Value("${bot.assistent.chatId}")
+    private String assistentChatId;
+
 
     @Override
     public String getBotToken() {
@@ -46,7 +54,15 @@ public class PsicologistBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage()) {
+
+
             Long chatId = update.getMessage().getChatId();
+
+            if(chatId.equals(Long.valueOf(assistentChatId))){
+                adminBotController.adminHasMessage(update,this);
+                return;
+            }
+
             UserState currentState = userService.getUserState(chatId);
             if (update.getMessage().hasText()) {
                 String text = update.getMessage().getText();
@@ -86,6 +102,20 @@ public class PsicologistBot extends TelegramLongPollingBot {
                     if (data.equals("next")) {
                         handleService.nextOperationMessageHandler(chatId, this);
                     }
+                }
+                case PAYMENT -> {
+                    /*switch (data)
+                    {
+                        case "click"  ->{
+                            handleService.processClickPayment(100.0,chatId);
+                        }
+                        case "payme"  ->{
+                            handleService.processPaymePayment(100.0, String.valueOf(chatId));
+                        }
+                        case "uzum"  ->{
+                             handleService.processUzumPayment(100.0, String.valueOf(chatId));
+                        }*/
+
                 }
             }
         }

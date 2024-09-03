@@ -1,7 +1,8 @@
-package com.example.psicologist_bot.model;
+package com.example.psicologist_bot.model.enums;
 
 public enum ConsultationStatus {
     CREATED,
+    MISSED,
     APPROVED,
 
     EDITED,

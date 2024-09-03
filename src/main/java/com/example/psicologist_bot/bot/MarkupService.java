@@ -1,6 +1,7 @@
 package com.example.psicologist_bot.bot;
 
-import com.example.psicologist_bot.model.Language;
+import com.example.psicologist_bot.model.enums.Language;
+import com.example.psicologist_bot.service.PaymentService;
 import com.example.psicologist_bot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import java.util.concurrent.ExecutionException;
 public class MarkupService {
 
     private final UserService userService;
+
+   private final PaymentService paymentService;
 
     public InlineKeyboardMarkup selectLanguageInlineMarkup() {
         InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup();
@@ -103,28 +106,31 @@ public class MarkupService {
 
         if (userService.getLanguage(chatId).get().equals(Language.UZB)) {
             buttonText1 = "Click 💵";
-            buttonText2 = "Payme 💶";
-            buttonText3 = "Uzum  💷";
+            buttonText2 = "Payme \uD83D\uDCB3";
+            buttonText3 = "Uzum  \uD83D\uDED2";
 
         } else if (userService.getLanguage(chatId).get().equals(Language.RUS)) {
             buttonText1 = "Click 💵";
-            buttonText2 = "Payme 💶";
-            buttonText3 = "Uzum  💷";
+            buttonText2 = "Payme \uD83D\uDCB3";
+            buttonText3 = "Uzum  \uD83D\uDED2";
         }
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText(buttonText1);
-        button.setCallbackData("click");
+        button.setCallbackData("click_payment");
+        button.setUrl(paymentService.generateClickPaymentLink("1000",chatId.toString()));
         buttonRow.add(button);
 
 
         button = new InlineKeyboardButton();
         button.setText(buttonText2);
-        button.setCallbackData("payme");
+        button.setCallbackData("payme_payment");
+        button.setUrl(paymentService.generatePaymePaymentLink("1000",chatId.toString()));
         buttonRow.add(button);
 
         button = new InlineKeyboardButton();
         button.setText(buttonText3);
-        button.setCallbackData("uzum");
+        button.setCallbackData("uzum_payment");
+        button.setUrl(paymentService.generateUzumPaymentLink("1000", String.valueOf(chatId)));
         buttonRow.add(button);
         rowsInline.add(buttonRow);
 
