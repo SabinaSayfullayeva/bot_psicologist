@@ -50,5 +50,14 @@ public class PaymentService {
             return true;
         }
         return false;
+
     }
+    public void save(Payment payment ){
+        paymentRepository.save(payment);
+    }
+
+     public  Payment getPaymentByUserChatId(Long chatId){
+        return paymentRepository.findFirstByUserId(chatId).get();
+    }
+
 }

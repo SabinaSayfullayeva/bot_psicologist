@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -94,15 +95,13 @@ public class AdminService {
     }
 
 
-    public Long getUserChatIdByConsultId(String s) {
-        return null;
-    }
 
-    public void addTimeListForUser(Long chatIdUser, Timestamp timestamp) {
-        HashMap<Long, ArrayList<Timestamp>> timeListChoose = dbSpeed.getTimeListChoose();
+
+    public void addTimeListForUser(Long chatIdUser, String timestamp) {
+        HashMap<Long, ArrayList<String>> timeListChoose = dbSpeed.getTimeListChoose();
         if (timeListChoose != null){
             if (timeListChoose.containsKey(chatIdUser)) {
-                ArrayList<Timestamp> timestamps = timeListChoose.get(chatIdUser);
+                ArrayList<String> timestamps = timeListChoose.get(chatIdUser);
                 if (timestamps != null){
                     timestamps.add(timestamp);
                 }else {
@@ -117,9 +116,27 @@ public class AdminService {
 
     }
 
-    public void doCanceledConsultWithId(String consultId) {
-
+    public Long getChatIdCurrentUserWithDb() {
+        HashMap<Long, ArrayList<String>> timeListChoose = dbSpeed.getTimeListChoose();
+        AtomicReference<Long> chatId1 = new AtomicReference<>();
+        timeListChoose.forEach((chatId, timestamps) -> {
+            if (timestamps != null){
+                chatId1.set(chatId);
+            }
+        });
+        return chatId1.get();
     }
+
+    public ArrayList<String> getListByChatId(Long chatIdUser) {
+        HashMap<Long, ArrayList<String>> timeListChoose = dbSpeed.getTimeListChoose();
+        return timeListChoose.get(chatIdUser);
+    }
+    public void clearTimeInDb(Long chatIdUser) {
+        HashMap<Long, ArrayList<String>> timeListChoose = dbSpeed.getTimeListChoose();
+        ArrayList<String> remove = timeListChoose.remove(chatIdUser);
+        remove.clear();
+    }
+
 
 
 

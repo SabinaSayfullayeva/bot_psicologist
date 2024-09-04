@@ -50,6 +50,10 @@ public interface Utils {
             {BEKOR_QILISH}
     };
 
-
+    String NEW_CONSULT = "Yanngi konsultation";
+    String MY_CONSULT = "Mening konsultationlarim";
+    String [][] user_menu={
+            {NEW_CONSULT,MY_CONSULT},
+    };
 
 }

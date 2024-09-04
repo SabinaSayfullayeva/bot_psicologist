@@ -116,22 +116,46 @@ public class MarkupService {
         }
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText(buttonText1);
-        button.setCallbackData("click_payment");
-        button.setUrl(paymentService.generateClickPaymentLink("1000",chatId.toString()));
+        button.setCallbackData("click");
+       // button.setUrl(paymentService.generateClickPaymentLink("1000",chatId.toString()));
         buttonRow.add(button);
 
 
         button = new InlineKeyboardButton();
         button.setText(buttonText2);
-        button.setCallbackData("payme_payment");
-        button.setUrl(paymentService.generatePaymePaymentLink("1000",chatId.toString()));
+        button.setCallbackData("payme");
+       // button.setUrl(paymentService.generatePaymePaymentLink("1000",chatId.toString()));
         buttonRow.add(button);
 
         button = new InlineKeyboardButton();
         button.setText(buttonText3);
-        button.setCallbackData("uzum_payment");
-        button.setUrl(paymentService.generateUzumPaymentLink("1000", String.valueOf(chatId)));
+        button.setCallbackData("uzum");
+       // button.setUrl(paymentService.generateUzumPaymentLink("1000", String.valueOf(chatId)));
         buttonRow.add(button);
+        rowsInline.add(buttonRow);
+
+        inlineKeyboard.setKeyboard(rowsInline);
+        return inlineKeyboard;
+    }
+
+
+    public InlineKeyboardMarkup createConsultationInlineMarkup(Long chatId) throws ExecutionException, InterruptedException {
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        List<InlineKeyboardButton> buttonRow = new ArrayList<>();
+
+        String buttonText1 = "";
+
+        if (userService.getLanguage(chatId).get().equals(Language.UZB)) {
+            buttonText1 = "Boshlash";
+        } else if (userService.getLanguage(chatId).get().equals(Language.RUS)) {
+            buttonText1 = "Hачинать";
+        }
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(buttonText1);
+        button.setCallbackData("boshlash");
+        buttonRow.add(button);
+
         rowsInline.add(buttonRow);
 
         inlineKeyboard.setKeyboard(rowsInline);

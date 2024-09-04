@@ -23,9 +23,10 @@ public class Consultation {
     @ManyToOne
     User user;
 
-    Timestamp time;
-  /*  @OneToOne
-    Payment payment;*/
+    String time;
+
+    @OneToOne
+    Payment payment;
 
     private Double amountOfPayment;
 

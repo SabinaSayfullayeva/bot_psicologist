@@ -4,6 +4,7 @@ public enum ConsultationStatus {
     CREATED,
     MISSED,
     APPROVED,
+    PENDING,
 
     EDITED,
     CANCELLED

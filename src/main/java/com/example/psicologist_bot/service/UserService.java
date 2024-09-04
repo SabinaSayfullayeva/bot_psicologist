@@ -23,7 +23,7 @@ public class UserService {
 
 
     public UserState getUserState(Long chatId) {
-        return userRepository.findUserStateByChatId(chatId).orElse(UserState.DEFAULT);
+        return UserState.valueOf(userRepository.findUserStateByChatId(chatId).orElse(String.valueOf(UserState.DEFAULT)));
     }
 
     public void save(User user) {
@@ -80,5 +80,9 @@ public class UserService {
             return state;
         }
         return getUserState(chatId);
+    }
+
+   public User getByChatId(Long chatId){
+        return userRepository.findByChatId(chatId).get();
     }
 }

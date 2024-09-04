@@ -14,8 +14,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User,Long> {
 
-    @Query(value = "select user_state from users where chat_id=:chatId", nativeQuery = true)
-    Optional<UserState> findUserStateByChatId(@Param("chatId") Long chatId);
+
 
     boolean existsByChatId(Long chatId);
 
@@ -37,5 +36,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     boolean existsByPhoneNumber(String username);
 
+    @Query(value = "select user_state from users where chat_id=:chatId", nativeQuery = true)
+    Optional<String> findUserStateByChatId(@Param("chatId") Long chatId);
 
 }

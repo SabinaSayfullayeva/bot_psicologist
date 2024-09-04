@@ -30,6 +30,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     Language language;
 
-    @Enumerated(EnumType.STRING)
-    UserState userState;
+
+    String userState;
 }

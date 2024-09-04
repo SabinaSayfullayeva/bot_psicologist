@@ -22,6 +22,8 @@ public class PsicologistBot extends TelegramLongPollingBot {
 
     private final AdminBotController adminBotController;
 
+    private final AdminHandlerServise adminHandlerServise;
+
 
     private  Map<Long, Answers> answersMap;
 
@@ -80,14 +82,21 @@ public class PsicologistBot extends TelegramLongPollingBot {
                     case FIRST_QUESTION -> handleService.secondQuestionMessageHendler(chatId,text,this);
                     case SECOND_QUESTION -> handleService.thirdQuestionMessageHendler(chatId,text,this);
                     case THIRD_QUESTION -> handleService.scheduleMeeting(chatId,text,this);
+                    case PAYMENT -> handleService.createPayment(chatId,null,this);
 
                 }
             }
         }
         if (update.hasCallbackQuery()) {
             Long chatId = update.getCallbackQuery().getMessage().getChatId();
+            if(chatId.equals(Long.valueOf(assistentChatId))){
+                adminBotController.adminCallbackQuery(update,this);
+                return;
+            }
+
             String data = update.getCallbackQuery().getData();
             UserState currentState = userService.getUserState(chatId);
+
 
             switch (currentState) {
                 case START -> {
@@ -104,18 +113,16 @@ public class PsicologistBot extends TelegramLongPollingBot {
                     }
                 }
                 case PAYMENT -> {
-                    /*switch (data)
-                    {
-                        case "click"  ->{
-                            handleService.processClickPayment(100.0,chatId);
-                        }
-                        case "payme"  ->{
-                            handleService.processPaymePayment(100.0, String.valueOf(chatId));
-                        }
-                        case "uzum"  ->{
-                             handleService.processUzumPayment(100.0, String.valueOf(chatId));
-                        }*/
+                    switch (data) {
+                        case "click", "payme", "uzum" -> {
 
+                             handleService.createPayment(chatId,data,this);
+                        }
+                    }}
+                case CREATE_CONSULTATION -> {
+                    if (data.equals("boshlash")){
+                        handleService.createConsultation(chatId, Long.valueOf(assistentChatId),this);
+                    }
                 }
             }
         }

@@ -11,7 +11,7 @@ import java.util.HashMap;
 @Data
 public class DbSpeed {
 
-    private final HashMap<Long,ArrayList<Timestamp>> timeListChoose = new HashMap<>();
+    private final HashMap<Long,ArrayList<String>> timeListChoose = new HashMap<>();
 
 
 

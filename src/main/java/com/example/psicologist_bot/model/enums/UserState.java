@@ -13,7 +13,10 @@ public enum UserState {
     FULL_NAME,
     PHONE_NUMBER,
     MAIL,
-    PAYMENT
+    PAYMENT,
+
+    CREATE_CONSULTATION,
+    WAIT
 
 
 }

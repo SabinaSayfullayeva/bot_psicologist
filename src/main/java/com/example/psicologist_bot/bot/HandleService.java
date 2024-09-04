@@ -1,9 +1,14 @@
 package com.example.psicologist_bot.bot;
 
+import com.example.psicologist_bot.model.Consultation;
+import com.example.psicologist_bot.model.Payment;
+import com.example.psicologist_bot.model.enums.ConsultationStatus;
 import com.example.psicologist_bot.model.enums.Language;
 import com.example.psicologist_bot.model.User;
+import com.example.psicologist_bot.model.enums.PaymentStatus;
 import com.example.psicologist_bot.model.enums.UserState;
 import com.example.psicologist_bot.service.AnswersService;
+import com.example.psicologist_bot.service.ConsultationService;
 import com.example.psicologist_bot.service.PaymentService;
 import com.example.psicologist_bot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +20,8 @@ import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +39,9 @@ public class HandleService {
 
     private final PaymentService paymentService;
 
+    private final ConsultationService consultationService;
+
+    private final AdminHandlerServise adminHandlerServise;
 
     @SneakyThrows
     public void defaultMessageHandler(Long chatId, String text, TelegramLongPollingBot bot) {
@@ -39,7 +49,7 @@ public class HandleService {
             User user = User.builder()
                     .chatId(chatId)
                     .language(Language.RUS)
-                    .userState(UserState.START)
+                    .userState(UserState.START.name())
                     .build();
             userService.save(user);
             startMessageHandler(chatId, bot);
@@ -217,10 +227,62 @@ public class HandleService {
         sendMessage.setReplyMarkup(markupService.paymentInlineMerkup(chatId));
         userService.updateUserState(chatId, UserState.PAYMENT);
         bot.execute(sendMessage);
+
+
+    }
+
+
+    @SneakyThrows
+    public void createPayment(Long chatId, String data, TelegramLongPollingBot bot) {
+        Payment payment = new Payment();
+
+        //test uchun paid qilib qo'ydim
+        payment.setPaymentStatus(PaymentStatus.PAID.name());
+        payment.setCreatedAt(new Date());
+        payment.setAmount(BigDecimal.valueOf(1000));
+        payment.setPaymentMethod(data);
+        payment.setCurrency("UZS");
+        payment.setUserId(chatId);
+        paymentService.save(payment);
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("Consultatsiya rejaleshtirishni boshlash");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Начать запись на консультацию");
+        sendMessage.setReplyMarkup(markupService.createConsultationInlineMarkup(chatId));
+        userService.updateUserState(chatId, UserState.CREATE_CONSULTATION);
+        bot.execute(sendMessage);
+
+
+    }
+
+    @SneakyThrows
+    public void createConsultation(Long chatId,Long adminChatID, TelegramLongPollingBot bot) {
+        Payment payment = paymentService.getPaymentByUserChatId(chatId);
+        if (payment.getPaymentStatus().equals(PaymentStatus.PAID.name())) {
+            Consultation consultation = new Consultation();
+            consultation.setPayment(payment);
+            consultation.setPaid(true);
+            consultation.setAmountOfPayment(payment.getAmount().doubleValue());
+            consultation.setUser(userService.getByChatId(chatId));
+            consultation.setConsultationStatus(ConsultationStatus.CREATED);
+            consultationService.save(consultation);
+            adminHandlerServise.sendConsultationToAdmin(adminChatID,consultation,bot);
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            if (userService.getLanguage(chatId).get().equals(Language.UZB))
+                sendMessage.setText("Tez orada admin sizga consultatsiya uchun qulay vaqitlarni yuboradi");
+            else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+                sendMessage.setText("Администратор пришлет вам удобное время для консультации в ближайшее время.");
+            userService.updateUserState(chatId, UserState.WAIT);
+            bot.execute(sendMessage);
+        }
     }
 
 
 }
+
 
 
 

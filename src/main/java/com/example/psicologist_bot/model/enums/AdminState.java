@@ -7,4 +7,5 @@
         ADMIN_MENU,
         ADMIN_SHOW_IN,
         ADD_TIME_PROSSES,
+        ADMIN_PENDING_PROCESS,
     }
