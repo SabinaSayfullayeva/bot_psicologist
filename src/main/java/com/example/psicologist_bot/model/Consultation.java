@@ -32,6 +32,6 @@ public class Consultation {
 
     private boolean paid;
 
-
+    @Enumerated(EnumType.STRING)
     ConsultationStatus consultationStatus;
 }

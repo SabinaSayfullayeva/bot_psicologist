@@ -6,6 +6,11 @@ import com.example.psicologist_bot.reposiyory.ConsultationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ConsultationService {
@@ -20,10 +25,31 @@ public class ConsultationService {
     }
 
     public void doCanceledConsultWithId(String consultId) {
-consultationRepository.updateState(Long.valueOf(consultId),ConsultationStatus.CANCELLED.name());
+        consultationRepository.updateState(Long.valueOf(consultId), ConsultationStatus.CANCELLED.name());
     }
 
     public Long getUserChatIdByConsultId(Long consultationId) {
         return consultationRepository.findById(consultationId).get().getUser().getChatId();
     }
+
+    public void setTimeToConsultation(String consultatId, String time) {
+        if (consultationRepository.existsById(Long.valueOf(consultatId))) {
+            Consultation consultation = consultationRepository.findById(Long.valueOf(consultatId)).get();
+            consultation.setTime(time);
+            consultation.setConsultationStatus(ConsultationStatus.APPROVED);
+            consultationRepository.save(consultation);
+
+        }
+    }
+
+    public Optional<Consultation> getConsultationById(Long id) {
+        return consultationRepository.findById(id);
+    }
+
+
+    public ArrayList<Consultation> getConsulationListApprovedAndEdited() {
+        return consultationRepository.findByStatusIn();
+    }
+
+
 }

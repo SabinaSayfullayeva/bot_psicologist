@@ -56,4 +56,8 @@ public interface Utils {
             {NEW_CONSULT,MY_CONSULT},
     };
 
+    String[][] orqaga = {
+            {ORQAGA}
+    };
+
 }

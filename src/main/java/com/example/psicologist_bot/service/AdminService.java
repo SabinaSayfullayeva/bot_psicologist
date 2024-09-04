@@ -2,9 +2,11 @@ package com.example.psicologist_bot.service;
 
 
 import com.example.psicologist_bot.bot.DbSpeed;
+import com.example.psicologist_bot.model.Consultation;
 import com.example.psicologist_bot.model.User;
 import com.example.psicologist_bot.model.enums.AdminState;
 import com.example.psicologist_bot.reposiyory.AdminRepository;
+import com.example.psicologist_bot.reposiyory.ConsultationRepository;
 import com.example.psicologist_bot.reposiyory.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class AdminService {
     private final UserRepository userRepository;
     private final AdminRepository adminRepository;
     private final DbSpeed dbSpeed;
+    private final ConsultationRepository consultationRepository;
 
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -105,8 +108,7 @@ public class AdminService {
                 if (timestamps != null){
                     timestamps.add(timestamp);
                 }else {
-                    timestamps = new ArrayList<>();
-                    timestamps.add(timestamp);
+                    System.out.println("null =>" + timestamp);
                 }
             }else {
                 timeListChoose.put(chatIdUser,new ArrayList<>());
@@ -137,7 +139,50 @@ public class AdminService {
         remove.clear();
     }
 
+    public String getBeautyConsultationList(ArrayList<Consultation> consultations) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (!consultations.isEmpty()) {
+            stringBuilder.append("Consultations:\n");
+            stringBuilder.append("============================================\n");
+            int i =0;
+            for (Consultation consultation : consultations) {
+                stringBuilder.append((++i)).append(" -> ");
+                stringBuilder.append("Consultation number : ").append(consultation.getId()).append("\n");
+                stringBuilder.append("Consultation payment status : ").append(consultation.getPayment().getPaymentStatus()).append("\n");
+                stringBuilder.append("Consultation time : ").append(consultation.getTime()).append("\n");
+                stringBuilder.append("===============================================\n");
+            }
+            stringBuilder.append("\n\n");
+            stringBuilder.append("raqam bilan izlash tugmasi, sizga o'sha consultatsiyani o'zgartirish, tasdiqlash va bekor qilishga yordam beradi\n");
+        }else {
+            stringBuilder.append("Consultatsiyalar mavjud emas");
+        }
+        return stringBuilder.toString();
+    }
 
+    public String getAllConsultForShowInText() {
+        ArrayList<Consultation> allConsultations = consultationRepository.getAll();
+
+        return getBeautyConsultationList(allConsultations);
+    }
+    public String getApprovedConsultForShowInText() {
+        ArrayList<Consultation> approvedConsultations = consultationRepository.getConsultationApproved();
+        return getBeautyConsultationList(approvedConsultations);
+    }
+
+    public String getCancelConsultForShowInText() {
+        ArrayList<Consultation> canceledConsultations = consultationRepository.getConsultationCancelled();
+        return getBeautyConsultationList(canceledConsultations);
+    }
+
+    public ArrayList<Consultation> getPendingConsult() {
+        return consultationRepository.getConsultationPending();
+    }
+
+    public String getConsultationWithIdAndPpreatty(String text) {
+
+        return null;
+    }
 
 
 }

@@ -8,4 +8,6 @@
         ADMIN_SHOW_IN,
         ADD_TIME_PROSSES,
         ADMIN_PENDING_PROCESS,
+        ADD_TIME,
+        SEARCH_WITH_ID
     }

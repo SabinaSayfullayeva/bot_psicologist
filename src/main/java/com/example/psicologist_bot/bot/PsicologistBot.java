@@ -124,6 +124,7 @@ public class PsicologistBot extends TelegramLongPollingBot {
                         handleService.createConsultation(chatId, Long.valueOf(assistentChatId),this);
                     }
                 }
+                case WAIT -> handleService.checkThisDate(chatId,data,this);
             }
         }
     }

@@ -280,6 +280,18 @@ public class HandleService {
         }
     }
 
+    @SneakyThrows
+    public void checkThisDate(Long chatId, String data, PsicologistBot bot) {
+        String[] split = data.split(";");
+        String consultatId = split[1];
+        consultationService.setTimeToConsultation(consultatId,split[0]);
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText("Vaqt Kansultatsiyaga yozib olindi, Sizni " + split[0] + " da kutib qolamiz.");
+        bot.execute(sendMessage);
+    }
+
+
 
 }
 

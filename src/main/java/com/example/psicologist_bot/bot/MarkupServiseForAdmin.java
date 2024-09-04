@@ -51,17 +51,48 @@ public class MarkupServiseForAdmin {
 
     public InlineKeyboardMarkup createInlineKeyboardFromTimestampList(ArrayList<String> timeListForUser) {
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+        String consultId = timeListForUser.get(0);
+        ArrayList<String> timeLists = new ArrayList<>(timeListForUser.subList(1, timeListForUser.size()));
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        for (String timestamp : timeListForUser) {
+        for (String timeList : timeLists) {
             List<InlineKeyboardButton> row = new ArrayList<>();
             InlineKeyboardButton inlineButton = new InlineKeyboardButton();
-            inlineButton.setText(timestamp);
-            inlineButton.setCallbackData(timestamp);
+            inlineButton.setText(timeList);
+            inlineButton.setCallbackData(timeList + ";" + consultId);
             row.add(inlineButton);
             rowsInline.add(row);
         }
         markupInline.setKeyboard(rowsInline);
         return markupInline;
+    }
+
+
+    public InlineKeyboardMarkup adminForCanselOrApproved(String consultId){
+        InlineKeyboardMarkup build=InlineKeyboardMarkup.builder()
+                .keyboardRow(List.of(
+                        InlineKeyboardButton.builder().text("Bekor qilish").callbackData(consultId + ";CANCELED").build(),
+                        InlineKeyboardButton.builder().text("Tasdiqlash").callbackData(consultId + ";APPROVED").build()
+                )).build();
+        return build;
+    }
+
+    public InlineKeyboardMarkup adminForCanselOrApprovedOrEdit(String consultId){
+        InlineKeyboardMarkup build=InlineKeyboardMarkup.builder()
+                .keyboardRow(List.of(
+                        InlineKeyboardButton.builder().text("Bekor qilish").callbackData(consultId + ";CANCELED").build(),
+                        InlineKeyboardButton.builder().text("Tasdiqlash").callbackData(consultId + ";APPROVED").build(),
+                        InlineKeyboardButton.builder().text("O'zgartirish").callbackData(consultId +";EDITED").build()
+                )).build();
+        return build;
+    }
+
+    public InlineKeyboardMarkup adminForApprovedOrEdit(String consultId){
+        InlineKeyboardMarkup build=InlineKeyboardMarkup.builder()
+                .keyboardRow(List.of(
+                        InlineKeyboardButton.builder().text("Tasdiqlash").callbackData(consultId + ";APPROVED").build(),
+                        InlineKeyboardButton.builder().text("O'zgartirish").callbackData(consultId + ";EDITED").build()
+                )).build();
+        return build;
     }
 
 }

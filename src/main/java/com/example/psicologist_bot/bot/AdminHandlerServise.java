@@ -104,8 +104,8 @@ public class AdminHandlerServise {
                 sendMessage.setChatId(chatId);
                 sendMessage.setText("Mijoz uchun qulay vaqtlarni tanlang");
                 sendMessage.setReplyMarkup(markupServiseForAdmin.keyboardMaker(Utils.time_in));
-
-                adminService.addTimeListForUser(chatIdUser, null);
+                adminService.addTimeListForUser(chatIdUser, split[0]);
+                adminService.updateUserState(chatId,AdminState.ADD_TIME);
                 bot.execute(sendMessage);
                 SendMessage sendMessage2 = new SendMessage();
                 sendMessage2.setChatId(chatIdUser);
@@ -173,7 +173,7 @@ public class AdminHandlerServise {
         sendMessage.setChatId(chatId);
         sendMessage.setText("Vaqt qo'shildi 👌");
         sendMessage.setReplyMarkup(markupServiseForAdmin.keyboardMaker(Utils.time_in));
-
+        adminService.updateUserState(chatId,AdminState.ADD_TIME);
         bot.execute(sendMessage);
         for (Map.Entry<Long, ArrayList<String>> entry : dbSpeed.getTimeListChoose().entrySet()) {
             Long i = entry.getKey();
@@ -228,6 +228,81 @@ public class AdminHandlerServise {
         sendMessage.setText("Mijozga vaqt Yuborilmadi");
         sendMessage.setReplyMarkup(markupServiseForAdmin.keyboardMaker(Utils.mainMenuAdmin));
         adminService.updateUserState(chatId,AdminState.ADMIN_MENU);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void showAllConsultation(Long chatId, PsicologistBot bot) {
+        String string = adminService.getAllConsultForShowInText();
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(string);
+        sendMessage.setReplyMarkup(markupServiseForAdmin.keyboardMaker(Utils.show_in));
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void showApprovedConsult(Long chatId, PsicologistBot bot) {
+        String string = adminService.getApprovedConsultForShowInText();
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(string);
+        sendMessage.setReplyMarkup(markupServiseForAdmin.keyboardMaker(Utils.show_in));
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void showCanceledConsult(Long chatId, PsicologistBot bot) {
+        String string = adminService.getCancelConsultForShowInText();
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(string);
+        sendMessage.setReplyMarkup(markupServiseForAdmin.keyboardMaker(Utils.show_in));
+        bot.execute(sendMessage);
+    }
+
+
+    @SneakyThrows
+    public void showPendingConsult(Long chatId, PsicologistBot bot) {
+        ArrayList<Consultation> penConsults = adminService.getPendingConsult();
+        for (Consultation penConsult : penConsults) {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.setText(penConsult.toString());
+            sendMessage.setReplyMarkup(markupServiseForAdmin.adminForCanselOrApproved(String.valueOf(penConsult.getId())));
+            adminService.updateUserState(chatId,AdminState.ADMIN_PENDING_PROCESS);
+            bot.execute(sendMessage);
+        }
+    }
+
+
+    @SneakyThrows
+    public void goToShowIn(Long chatId, PsicologistBot bot) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText("Kerakli tugmani tanlang");
+        sendMessage.setReplyMarkup(markupServiseForAdmin.keyboardMaker(Utils.show_in));
+        adminService.updateUserState(chatId, AdminState.ADMIN_SHOW_IN);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void searchWithId(Long chatId, PsicologistBot bot) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText("Tegishli Raqamni kiriting");
+        sendMessage.setReplyMarkup(markupServiseForAdmin.keyboardMaker(Utils.orqaga));
+        adminService.updateUserState(chatId,AdminState.SEARCH_WITH_ID);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void searchingWithId(Long chatId, String text, PsicologistBot bot) {
+        String preattyShowConsultation = adminService.getConsultationWithIdAndPpreatty(text);
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(preattyShowConsultation);
+        sendMessage.setReplyMarkup(markupServiseForAdmin.adminForCanselOrApprovedOrEdit(text));
         bot.execute(sendMessage);
     }
 
