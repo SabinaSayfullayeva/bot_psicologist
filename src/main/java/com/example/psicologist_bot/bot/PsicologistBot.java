@@ -25,7 +25,7 @@ public class PsicologistBot extends TelegramLongPollingBot {
     private final AdminHandlerServise adminHandlerServise;
 
 
-    private  Map<Long, Answers> answersMap;
+    private Map<Long, Answers> answersMap;
 
     private Answers answers;
 
@@ -60,8 +60,8 @@ public class PsicologistBot extends TelegramLongPollingBot {
 
             Long chatId = update.getMessage().getChatId();
 
-            if(chatId.equals(Long.valueOf(assistentChatId))){
-                adminBotController.adminHasMessage(update,this);
+            if (chatId.equals(Long.valueOf(assistentChatId))) {
+                adminBotController.adminHasMessage(update, this);
                 return;
             }
 
@@ -76,21 +76,18 @@ public class PsicologistBot extends TelegramLongPollingBot {
                 switch (currentState) {
                     case DEFAULT -> handleService.defaultMessageHandler(chatId, text, this);
                     case START -> handleService.startMessageHandler(chatId, this);
-                    case FULL_NAME -> handleService.appFullNameMessageHandler(chatId,text,this);
-                    case PHONE_NUMBER -> handleService.appPhoneNumMessageHandler(chatId,text,this);
-                    case MAIL ->handleService.askQuestionHandler(chatId, text,this);
-                    case FIRST_QUESTION -> handleService.secondQuestionMessageHendler(chatId,text,this);
-                    case SECOND_QUESTION -> handleService.thirdQuestionMessageHendler(chatId,text,this);
-                    case THIRD_QUESTION -> handleService.scheduleMeeting(chatId,text,this);
-                    case PAYMENT -> handleService.createPayment(chatId,null,this);
+                    case FULL_NAME -> handleService.appFullNameMessageHandler(chatId, text, this);
+                    case PHONE_NUMBER -> handleService.appPhoneNumMessageHandler(chatId, text, this);
+                    case MAIL -> handleService.scheduleMeeting(chatId, text, this);
+                    case PAYMENT -> handleService.createPayment(chatId, null, this);
 
                 }
             }
         }
         if (update.hasCallbackQuery()) {
             Long chatId = update.getCallbackQuery().getMessage().getChatId();
-            if(chatId.equals(Long.valueOf(assistentChatId))){
-                adminBotController.adminCallbackQuery(update,this);
+            if (chatId.equals(Long.valueOf(assistentChatId))) {
+                adminBotController.adminCallbackQuery(update, this);
                 return;
             }
 
@@ -100,31 +97,73 @@ public class PsicologistBot extends TelegramLongPollingBot {
 
             switch (currentState) {
                 case START -> {
-                    handleService.fullNameMessageHandler(chatId, data,this);
+                    handleService.askQuestionHandler(chatId, data, this);
                 }
                 case ASK_QUESTION -> {
                     if (data.equals("questions")) {
                         handleService.firstQuestionMessageHandler(chatId, this);
                     }
                 }
-                case FIRST_QUESTION, SECOND_QUESTION,MAIL,THIRD_QUESTION -> {
-                    if (data.equals("next")) {
-                        handleService.nextOperationMessageHandler(chatId, this);
+                case FIRST_QUESTION -> {
+                    switch (data) {
+                        case "100", "80", "60", "40", "next" -> {
+                            handleService.secondQuestionMessageHendler(chatId, data, this);
+                        }
+                    }
+                }
+                case SECOND_QUESTION -> {
+                    switch (data) {
+                        case "100", "80", "60", "40", "next" -> {
+                            handleService.thirdQuestionMessageHendler(chatId, data, this);
+                        }
+                    }
+                }
+                case THIRD_QUESTION -> {
+                    switch (data) {
+                        case "100", "80", "60", "40", "next" -> {
+                            handleService.fourthQuestionMessageHendler(chatId, data, this);
+                        }
+                    }
+                }
+                case FOURHT_QUESTION -> {
+                    switch (data) {
+                        case "100", "80", "60", "40", "next" -> {
+                            handleService.fivethQuestionMessageHendler(chatId, data, this);
+                        }
+                    }
+                }
+
+                case FIVETH_QUESTION -> {
+                    switch (data) {
+                        case "100", "80", "60", "40", "next" -> {
+                            handleService.sendNotificationAfterQuestions(chatId, this);
+                        }
                     }
                 }
                 case PAYMENT -> {
                     switch (data) {
                         case "click", "payme", "uzum" -> {
 
-                             handleService.createPayment(chatId,data,this);
+                            handleService.createPayment(chatId, data, this);
                         }
-                    }}
+                    }
+                }
+                case CREATE_CONSULTATION_START -> {
+                    if (data.equals("boshlash")) {
+                        handleService.fullNameMessageHandler(chatId, this);
+                    }
+                }
                 case CREATE_CONSULTATION -> {
-                    if (data.equals("boshlash")){
+                    if (data.equals("ok")){
                         handleService.createConsultation(chatId, Long.valueOf(assistentChatId),this);
                     }
                 }
-                case WAIT -> handleService.checkThisDate(chatId,data,this);
+                case MAIL -> {
+                    if (data.equals("next")) {
+                        handleService.scheduleMeeting(chatId, null, this);
+                    }
+                }
+                case WAIT -> handleService.checkThisDate(chatId, data, this);
             }
         }
     }

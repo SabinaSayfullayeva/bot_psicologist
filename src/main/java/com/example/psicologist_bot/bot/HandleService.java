@@ -43,6 +43,8 @@ public class HandleService {
 
     private final AdminHandlerServise adminHandlerServise;
 
+    private int sum = 0;
+
     @SneakyThrows
     public void defaultMessageHandler(Long chatId, String text, TelegramLongPollingBot bot) {
         if (text.equals("/start")) {
@@ -82,24 +84,139 @@ public class HandleService {
 
     @SneakyThrows
     public void askQuestionHandler(Long chatId, String data, TelegramLongPollingBot bot) {
-
+        userService.changeLanguage(chatId, data);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         userService.updateEmail(chatId, data);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
-            sendMessage.setText("Iltimos quyidagi savollarga yozma ravishda javob yuboring!\n Savollarga javob berishingiz " +
-                    "yoki javob berishni xoxlamasangiz o'tkazib yuborishingiz mumkin");
+            sendMessage.setText("Vrach bilan cansultatsiya uyushtirish uchun siz aynan biznin bemorimiz ekanligingizga ishonch hosil qilishimiz kerak .\n " +
+                    "Iltimos quyidagi savollarga javob variantlaridan o'zingizga mos bo'lganini tanlang !\n" +
+                    "Agar savollarda keltirilgan semptopmlar kuzatilmasa savollarni o'tkazib yuborishingiz mumkin .");
         else if (userService.getLanguage(chatId).get().equals(Language.RUS))
-            sendMessage.setText("Пожалуйста, ответьте письменно на следующие вопросы!\n" +
-                    "Вы можете ответить на вопросы или пропустить их, если не хотите на них отвечать.");
+            sendMessage.setText("Для того, чтобы организовать консультацию врача, нам необходимо убедиться, что Вы являетесь нашим пациентом.\n" +
+                    "Пожалуйста, выберите из ответов на следующие вопросы тот, который подходит именно Вам!\n" +
+                    "Если вы не наблюдаете симптомов, упомянутых в вопросах, вы можете пропустить вопросы.");
         sendMessage.setReplyMarkup(markupService.askQuestionInlineMarkup(chatId));
         userService.updateUserState(chatId, UserState.ASK_QUESTION);
         bot.execute(sendMessage);
     }
 
+
     @SneakyThrows
-    public void fullNameMessageHandler(Long chatId, String data, TelegramLongPollingBot bot) {
-        userService.changeLanguage(chatId, data);
+    public void firstQuestionMessageHandler(Long chatId, TelegramLongPollingBot bot) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("1-savol: ");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Вопрос 1: ");
+        sendMessage.setReplyMarkup(markupService.optionMarkup(chatId));
+        userService.updateUserState(chatId, UserState.FIRST_QUESTION);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void secondQuestionMessageHendler(Long chatId, String data, TelegramLongPollingBot bot) {
+        if (data.equals("next")){
+            sum+=0;
+        }else {
+            sum +=Integer.parseInt(data);
+        }
+                SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("2-savol:");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Вопрос 2:");
+        sendMessage.setReplyMarkup(markupService.optionMarkup(chatId));
+        userService.updateUserState(chatId, UserState.SECOND_QUESTION);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void thirdQuestionMessageHendler(Long chatId, String data, TelegramLongPollingBot bot) {
+        if (data.equals("next")){
+            sum+=0;
+        }else {
+            sum +=Integer.parseInt(data);
+        }
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("3-savol: ");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Вопрос 3: ");
+        sendMessage.setReplyMarkup(markupService.optionMarkup(chatId));
+        userService.updateUserState(chatId, UserState.THIRD_QUESTION);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void fourthQuestionMessageHendler(Long chatId, String data, TelegramLongPollingBot bot) {
+        if (data.equals("next")){
+            sum+=0;
+        }else {
+            sum +=Integer.parseInt(data);
+        }
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("4-savol: ");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Вопрос 4: ");
+        sendMessage.setReplyMarkup(markupService.optionMarkup(chatId));
+        userService.updateUserState(chatId, UserState.FOURHT_QUESTION);
+        bot.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void fivethQuestionMessageHendler(Long chatId, String data, TelegramLongPollingBot bot) {
+        if (data.equals("next")){
+            sum+=0;
+        }else {
+            sum +=Integer.parseInt(data);
+        }
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if (userService.getLanguage(chatId).get().equals(Language.UZB))
+            sendMessage.setText("5-savol: ");
+        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+            sendMessage.setText("Вопрос 5: ");
+        sendMessage.setReplyMarkup(markupService.optionMarkup(chatId));
+        userService.updateUserState(chatId, UserState.FIVETH_QUESTION);
+        bot.execute(sendMessage);
+    }
+
+
+    @SneakyThrows
+    public void sendNotificationAfterQuestions(Long chatId, TelegramLongPollingBot bot){
+        sum=sum/5;
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        if(sum>70){
+            if (userService.getLanguage(chatId).get().equals(Language.UZB))
+                sendMessage.setText("Natijalarga ko'ra siz vrach bilan konsultatsiya rejalashtirishingiz mumkin. ");
+            else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+                sendMessage.setText("По результатам можно записаться на консультацию к врачу. ");
+            sendMessage.setReplyMarkup(markupService.createConsultationInlineMarkup(chatId));
+            userService.updateUserState(chatId, UserState.CREATE_CONSULTATION_START);
+            bot.execute(sendMessage);
+        }else {
+            if (userService.getLanguage(chatId).get().equals(Language.UZB))
+                sendMessage.setText(" sizning natijalaringiz juda yaxshi .Natijalarga ko'ra siz vrach bilan" +
+                        " konsultatsiya rejalashtira olmaysiz chunki siz bizning bemorimiz emassiz siz " +
+                        "psixologga murojaat qiling ,Agar siz bizning xizmatlatrimizdan qayta foydalanishni xoxlasangiz /start tugmasini bosing ");
+            else if (userService.getLanguage(chatId).get().equals(Language.RUS))
+                sendMessage.setText("ваши результаты очень хорошие. По результатам вы не можете записаться на консультацию к врачу, так как вы не наш пациент, " +
+                        "вам следует обратиться к психологу. Если вы хотите снова воспользоваться нашими услугами, нажмите /start. ");
+            userService.updateUserState(chatId, UserState.START);
+            bot.execute(sendMessage);
+        }
+    }
+
+    @SneakyThrows
+    public void fullNameMessageHandler(Long chatId, TelegramLongPollingBot bot) {
+
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
@@ -131,91 +248,21 @@ public class HandleService {
             sendMessage.setText("Elektron pochta manzilingizni kirirting(ixtiyoriy): ");
         else if (userService.getLanguage(chatId).get().equals(Language.RUS))
             sendMessage.setText("Введите свой адрес электронной почты (необязательно): ");
-        sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
+         sendMessage.setReplyMarkup(markupService.nextInlineMarup(chatId));
         userService.updatePhoneNumber(chatId, phoneNum);
         userService.updateUserState(chatId, UserState.MAIL);
         bot.execute(sendMessage);
     }
 
 
-    @SneakyThrows
-    public void backOperationMessageHandler(Long chatId, TelegramLongPollingBot bot) {
-        UserState userState = userService.getUserState(chatId);
-        if (userState.equals(UserState.ASK_QUESTION)) {
-            userService.updateUserState(chatId, UserState.START);
-            startMessageHandler(chatId, bot);
-        }
-    }
+
+
+
 
 
     @SneakyThrows
-    public void nextOperationMessageHandler(Long chatId, TelegramLongPollingBot bot) {
-        UserState userState = userService.getUserState(chatId);
-        if (userState.equals(UserState.FIRST_QUESTION)) {
-            userService.updateUserState(chatId, UserState.SECOND_QUESTION);
-            secondQuestionMessageHendler(chatId, null, bot);
-        }
-        if (userState.equals(UserState.SECOND_QUESTION)) {
-            userService.updateUserState(chatId, UserState.THIRD_QUESTION);
-            thirdQuestionMessageHendler(chatId, null, bot);
-        }
-        if (userState.equals(UserState.MAIL)) {
-            userService.updateUserState(chatId, UserState.ASK_QUESTION);
-            askQuestionHandler(chatId, null, bot);
-        }
-        if (userState.equals(UserState.THIRD_QUESTION)) {
-            userService.updateUserState(chatId, UserState.PAYMENT);
-            scheduleMeeting(chatId, null, bot);
-        }
-
-
-    }
-
-
-    @SneakyThrows
-    public void firstQuestionMessageHandler(Long chatId, TelegramLongPollingBot bot) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        if (userService.getLanguage(chatId).get().equals(Language.UZB))
-            sendMessage.setText("1-savol: Sizda simptomlar qachondan paydo bo'lgan?");
-        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
-            sendMessage.setText("Вопрос 1: Когда у вас появились симптомы?");
-        sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
-        userService.updateUserState(chatId, UserState.FIRST_QUESTION);
-        bot.execute(sendMessage);
-    }
-
-    @SneakyThrows
-    public void secondQuestionMessageHendler(Long chatId, String data, TelegramLongPollingBot bot) {
-        answersService.updateAnswer1(chatId, data);
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        if (userService.getLanguage(chatId).get().equals(Language.UZB))
-            sendMessage.setText("2-savol: Siz qanchalik tez xavotir yoki stress his qilasiz?");
-        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
-            sendMessage.setText("Вопрос 2: Как часто вы чувствуете беспокойство или стресс?");
-        sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
-        userService.updateUserState(chatId, UserState.SECOND_QUESTION);
-        bot.execute(sendMessage);
-    }
-
-    @SneakyThrows
-    public void thirdQuestionMessageHendler(Long chatId, String data, TelegramLongPollingBot bot) {
-        answersService.updateAnswer2(chatId, data);
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        if (userService.getLanguage(chatId).get().equals(Language.UZB))
-            sendMessage.setText("3-savol: O'z simptomlaringizni batafsilroq tasvirlab bera olasizmi?");
-        else if (userService.getLanguage(chatId).get().equals(Language.RUS))
-            sendMessage.setText("Вопрос 3: Можете ли вы описать ваши симптомы более подробно?");
-        sendMessage.setReplyMarkup(markupService.nextInlineMarkup(chatId));
-        userService.updateUserState(chatId, UserState.THIRD_QUESTION);
-        bot.execute(sendMessage);
-    }
-
-    @SneakyThrows
-    public void scheduleMeeting(Long chatId, String data, TelegramLongPollingBot bot) {
-        answersService.updateAnswer3(chatId, data);
+    public void scheduleMeeting(Long chatId,String data, TelegramLongPollingBot bot) {
+        userService.updateEmail(chatId,data);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
@@ -247,10 +294,10 @@ public class HandleService {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         if (userService.getLanguage(chatId).get().equals(Language.UZB))
-            sendMessage.setText("Consultatsiya rejaleshtirishni boshlash");
+            sendMessage.setText("Consultatsiya haqida xabar yuborish");
         else if (userService.getLanguage(chatId).get().equals(Language.RUS))
-            sendMessage.setText("Начать запись на консультацию");
-        sendMessage.setReplyMarkup(markupService.createConsultationInlineMarkup(chatId));
+            sendMessage.setText("Отправить консультационное сообщение");
+        sendMessage.setReplyMarkup(markupService.sendToAdminMarkup(chatId));
         userService.updateUserState(chatId, UserState.CREATE_CONSULTATION);
         bot.execute(sendMessage);
 
@@ -258,7 +305,7 @@ public class HandleService {
     }
 
     @SneakyThrows
-    public void createConsultation(Long chatId,Long adminChatID, TelegramLongPollingBot bot) {
+    public void createConsultation(Long chatId, Long adminChatID, TelegramLongPollingBot bot) {
         Payment payment = paymentService.getPaymentByUserChatId(chatId);
         if (payment.getPaymentStatus().equals(PaymentStatus.PAID.name())) {
             Consultation consultation = new Consultation();
@@ -268,7 +315,7 @@ public class HandleService {
             consultation.setUser(userService.getByChatId(chatId));
             consultation.setConsultationStatus(ConsultationStatus.CREATED);
             consultationService.save(consultation);
-            adminHandlerServise.sendConsultationToAdmin(adminChatID,consultation,bot);
+            adminHandlerServise.sendConsultationToAdmin(adminChatID, consultation, bot);
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(chatId);
             if (userService.getLanguage(chatId).get().equals(Language.UZB))
@@ -284,13 +331,12 @@ public class HandleService {
     public void checkThisDate(Long chatId, String data, PsicologistBot bot) {
         String[] split = data.split(";");
         String consultatId = split[1];
-        consultationService.setTimeToConsultation(consultatId,split[0]);
+        consultationService.setTimeToConsultation(consultatId, split[0]);
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText("Vaqt Kansultatsiyaga yozib olindi, Sizni " + split[0] + " da kutib qolamiz.");
         bot.execute(sendMessage);
     }
-
 
 
 }
